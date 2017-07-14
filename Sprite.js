@@ -109,7 +109,7 @@ Sprite.prototype.colocaBomba = function (map, ctx){
     var bomba = new Sprite();
     bomba.imgKey = "bomb";
     bomba.color = "blue";
-    bomba.explodes = 1;
+    bomba.explodes = 2;
 
     bomba.y = (this.gy + 0.5) * map.SIZE;
     bomba.x = (this.gx + 0.5) * map.SIZE;

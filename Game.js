@@ -8,7 +8,7 @@ var message;
 var dt;
 var images;
 var anterior = 0;
-var explosao = 100;
+var explosao = 50;
 
 function init(){
   canvas = document.getElementsByTagName('canvas')[0];
@@ -53,7 +53,7 @@ function passo(t){
     map.bombaExplodes(dt,pc1,pc2);
     if(explosao <= 0){
       map.posExplosao(dt);
-      explosao = 10;
+      explosao = 50;
     }
     pc1.mover(map, dt);
     pc2.mover(map, dt);
