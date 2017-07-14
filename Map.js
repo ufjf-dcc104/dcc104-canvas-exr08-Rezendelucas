@@ -8,6 +8,8 @@ function Map(rows, collumns) {
       this.cells[r][c] = 0;
     }
   }
+  this.images = null;
+  this.cooldown = 0;
 }
 
 Map.prototype.desenhar = function (ctx, img) {
@@ -104,59 +106,78 @@ Map.prototype.bombaExplodes = function(dt, pc1 , pc2){
   for(i = this.bombs.length -1; i >=0; i--){
       if(this.bombs[i].timeoutBomba(dt)){
 
+
         this.bombs[i].localizacao(this);
         
         //Verifica se algum player está no alcance da bomba
         this.gameOver(this.bombs[i],pc1); 
         this.gameOver(this.bombs[i],pc2);   
 
-        //Limpa o cenário
-        if(this.cells[this.bombs[i].gy-1][this.bombs[i].gx] != 1){
-          if(this.cells[this.bombs[i].gy-1][this.bombs[i].gx] == 3){//cima
-            this.cells[this.bombs[i].gy-1][this.bombs[i].gx] = 5;
-          }
-          if(this.cells[this.bombs[i].gy-2][this.bombs[i].gx] != 1){
-            if(this.cells[this.bombs[i].gy-2][this.bombs[i].gx] == 3){//cima
-               this.cells[this.bombs[i].gy-2][this.bombs[i].gx] = 5;
-            }
-          }
-        }
-        if(this.cells[this.bombs[i].gy+1][this.bombs[i].gx] != 1){
-          if(this.cells[this.bombs[i].gy+1][this.bombs[i].gx] == 3){//baixo
-            this.cells[this.bombs[i].gy+1][this.bombs[i].gx] = 5;
-          } 
-          if(this.cells[this.bombs[i].gy+2][this.bombs[i].gx] != 1){
-            if(this.cells[this.bombs[i].gy+2][this.bombs[i].gx] == 3){//baixo
-              this.cells[this.bombs[i].gy+2][this.bombs[i].gx] = 5;
-            }
-          }  
-        }
-        if(this.cells[this.bombs[i].gy][this.bombs[i].gx-1] != 1){
-          if(this.cells[this.bombs[i].gy][this.bombs[i].gx-1] == 3){//esquerda
-            this.cells[this.bombs[i].gy][this.bombs[i].gx-1] = 5;
-          }
-           if(this.cells[this.bombs[i].gy][this.bombs[i].gx-2] != 1){
-            if(this.cells[this.bombs[i].gy][this.bombs[i].gx-2] == 3){//esquerda
-              this.cells[this.bombs[i].gy][this.bombs[i].gx-2] = 5;
-            }
-          }
-        }
-        if(this.cells[this.bombs[i].gy][this.bombs[i].gx+1] != 1){
-          if(this.cells[this.bombs[i].gy][this.bombs[i].gx+1] == 3){//direita
-            this.cells[this.bombs[i].gy][this.bombs[i].gx+1] = 5;
-          }
-          if(this.cells[this.bombs[i].gy][this.bombs[i].gx+2] != 1){
-            if(this.cells[this.bombs[i].gy][this.bombs[i].gx+2] == 3){//direita
-              this.cells[this.bombs[i].gy][this.bombs[i].gx+2] = 5;
-            }
-          }
-        } 
-        this.cells[this.bombs[i].gy][this.bombs[i].gx] = 5;
-        
-        //Remove a bomba
-        this.bombs.splice(i,1);
-      } 
+        this.atualizaArredoresDaBomba(this.bombs[i],7);// atualiza com explosao
+    } 
   }
+};
+
+Map.prototype.posExplosao = function(dt){
+  for(i = this.bombs.length -1; i >=0; i--){
+      if(this.bombs[i].timeoutBomba(dt)){
+         this.bombs[i].localizacao(this);
+         this.atualizaArredoresDaBomba(this.bombs[i],5)// apos o tempo de explosao atualiza para celula vazia
+         this.bombs.splice(i,1);
+          /*
+          if(this.bombs[i].explodes > 0) {
+              this.bombs[i].explodes -= dt;
+          }else if(this.bombs[i].explodes <= 0) {
+              this.atualizaArredoresDaBomba(this.bombs[i],5)// apos o tempo de explosao atualiza para celula vazia
+              this.bombs.splice(i,1);
+          }
+         */   
+      }
+  }
+};
+
+
+Map.prototype.atualizaArredoresDaBomba = function(bombs, val){
+  //atualiza ao redor da bomba
+  if(!this.isParede(bombs.gy-1,bombs.gx)){//cima
+    this.cells[bombs.gy-1][bombs.gx] = val;
+    if(!this.isParede(bombs.gy-2,bombs.gx)){
+        this.cells[bombs.gy-2][bombs.gx] = val;
+      }
+  }
+  if(!this.isParede(bombs.gy+1,bombs.gx)){
+    this.cells[bombs.gy+1][bombs.gx] = val;
+    if(!this.isParede(bombs.gy+2,bombs.gx)){
+        this.cells[bombs.gy+2][bombs.gx] = val;
+      }  
+  }
+  if(!this.isParede(bombs.gy,bombs.gx-1)){
+    this.cells[bombs.gy][bombs.gx-1] = val;
+    if(!this.isParede(bombs.gy,bombs.gx-2)){
+       this.cells[bombs.gy][bombs.gx-2] = val;
+      }
+  }
+  if(!this.isParede(bombs.gy,bombs.gx+1)){
+    this.cells[bombs.gy][bombs.gx+1] = val;
+    if(!this.isParede(bombs.gy,bombs.gx+2)){
+       this.cells[bombs.gy][bombs.gx+2] = val;
+      }
+  } 
+  this.cells[bombs.gy][bombs.gx] = val;
+};
+
+Map.prototype.isEspaçoVazio = function(bombsGY,bombsGX){
+  if(this.cells[bombsGY][bombsGX] == 3)
+    return true;
+  else
+    return false;
+};
+
+Map.prototype.isParede = function(bombsGY,bombsGX){
+  if(this.cells[bombsGY][bombsGX] == 1)
+    return true;
+  else
+    return false;
 };
 
 Map.prototype.gameOver = function (bomba, pc){  

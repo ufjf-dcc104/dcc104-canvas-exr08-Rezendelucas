@@ -8,6 +8,7 @@ var message;
 var dt;
 var images;
 var anterior = 0;
+var explosao = 100;
 
 function init(){
   canvas = document.getElementsByTagName('canvas')[0];
@@ -30,9 +31,9 @@ function init(){
     [1,1,1,1,1,1,1,1,1,1],
     [1,2,5,3,1,3,3,3,3,1],
     [1,5,1,3,3,3,3,1,3,1],
-    [1,5,1,3,1,1,5,3,3,1],
-    [1,5,3,3,3,3,3,1,3,1],
-    [1,5,1,3,1,3,3,3,3,1],
+    [1,3,1,3,1,1,5,3,3,1],
+    [1,3,3,3,3,3,3,1,3,1],
+    [1,3,1,3,1,3,3,3,3,1],
     [1,3,3,5,1,3,1,5,3,1],
     [1,3,1,1,3,3,1,1,5,1],
     [1,3,3,3,3,3,3,5,4,1],
@@ -50,6 +51,10 @@ function passo(t){
   if(!gameOver){
   
     map.bombaExplodes(dt,pc1,pc2);
+    if(explosao <= 0){
+      map.posExplosao(dt);
+      explosao = 10;
+    }
     pc1.mover(map, dt);
     pc2.mover(map, dt);
 
@@ -58,6 +63,7 @@ function passo(t){
     pc2.desenhar(ctx, images);
 
     verificaVitoria();
+    explosao--;
     anterior = t;
 
   }else{

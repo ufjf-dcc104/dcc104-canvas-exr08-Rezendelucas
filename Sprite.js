@@ -8,7 +8,7 @@ function Sprite(){
   this.life = 1;
   this.SIZE = 16;
   this.cooldown = 0;
-  this.explodes = 0;
+  this.explodes = 2; //cooldown da bomba pos explosao
 
   this.pose = 0;
   this.frame = 0;
@@ -97,7 +97,7 @@ Sprite.prototype.mover = function (map, dt) {
     this.y = this.y + this.vy*dt;
   }
 
-  this.cooldonwBomba(dt);
+  this.cooldownBomba(dt);
   this.atualizaFrameAnimacoa(dt);
 };
 
@@ -109,7 +109,7 @@ Sprite.prototype.colocaBomba = function (map, ctx){
     var bomba = new Sprite();
     bomba.imgKey = "bomb";
     bomba.color = "blue";
-    bomba.explodes = 2;
+    bomba.explodes = 1;
 
     bomba.y = (this.gy + 0.5) * map.SIZE;
     bomba.x = (this.gx + 0.5) * map.SIZE;
@@ -120,7 +120,7 @@ Sprite.prototype.colocaBomba = function (map, ctx){
   }
 };
 
-Sprite.prototype.cooldonwBomba = function(dt){
+Sprite.prototype.cooldownBomba = function(dt){
   if(this.cooldown>0) {
     this.cooldown -= dt;
   } else {
