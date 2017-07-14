@@ -6,7 +6,6 @@ function Sprite(){
   this.gy;
   this.gx;
   this.life = 1;
-  this.vitoria = false;
   this.SIZE = 16;
   this.cooldown = 0;
   this.explodes = 0;
@@ -81,18 +80,18 @@ Sprite.prototype.mover = function (map, dt) {
   this.localizacao(map);
 
   // movimentaçao no eixo x
-  if(this.vx>0 && map.cells[this.gy][this.gx+1] == 1 || map.cells[this.gy][this.gx+1] == 3){
+  if(this.vx>0 && map.cells[this.gy][this.gx+1] != 5){
     this.x += Math.min((this.gx+1)*map.SIZE - (this.x+this.SIZE/2),this.vx*dt);
-  }else if(this.vx <0 && map.cells[this.gy][this.gx-1] == 1 || map.cells[this.gy][this.gx-1] == 3){
+  }else if(this.vx <0 && map.cells[this.gy][this.gx-1] != 5){
     this.x += Math.max((this.gx)*map.SIZE - (this.x-this.SIZE/2),this.vx*dt);
   }else{
     this.x = this.x + this.vx*dt;
   }
 
   //movimentaçao no eixo y 
-  if(this.vy >0 && map.cells[this.gy+1][this.gx] == 1 || map.cells[this.gy+1][this.gx] == 3){
+  if(this.vy >0 && map.cells[this.gy+1][this.gx] != 5 ){
     this.y += Math.min((this.gy+1)*map.SIZE - (this.y+this.SIZE/2),this.vy*dt);
-  }else if( this.vy<0 && map.cells[this.gy-1][this.gx] == 1 || map.cells[this.gy-1][this.gx] == 3){
+  }else if( this.vy<0 && map.cells[this.gy-1][this.gx] != 5 ){
     this.y += Math.max((this.gy)*map.SIZE - (this.y-this.SIZE/2),this.vy*dt);
   }else{
     this.y = this.y + this.vy*dt;
@@ -100,6 +99,25 @@ Sprite.prototype.mover = function (map, dt) {
 
   this.cooldonwBomba(dt);
   this.atualizaFrameAnimacoa(dt);
+};
+
+Sprite.prototype.colocaBomba = function (map, ctx){
+
+  this.localizacao(map);  
+
+  if(this.cooldown == 0){
+    var bomba = new Sprite();
+    bomba.imgKey = "bomb";
+    bomba.color = "blue";
+    bomba.explodes = 2;
+
+    bomba.y = (this.gy + 0.5) * map.SIZE;
+    bomba.x = (this.gx + 0.5) * map.SIZE;
+    this.cooldown = 1;
+      
+    map.cells[this.gy][this.gx] = 6 ;
+    map.bombs.push(bomba);
+  }
 };
 
 Sprite.prototype.cooldonwBomba = function(dt){
@@ -126,7 +144,7 @@ Sprite.prototype.timeoutBomba = function(dt){
     this.explodes = 0;
     return true;
   }
-}
+};
 
 Sprite.prototype.colidiuCom = function (alvo) {
   if(this.x + this.width/2  < alvo.x - alvo.width/2)   return false;  // colisão pela esquerda
@@ -136,3 +154,10 @@ Sprite.prototype.colidiuCom = function (alvo) {
   return true;
 };
 
+Sprite.prototype.derrota = function (){
+  if(this.life <= 0){
+    this.dead = true;
+    return true
+  }
+  return false;
+};

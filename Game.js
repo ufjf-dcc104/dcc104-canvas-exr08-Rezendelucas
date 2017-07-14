@@ -30,9 +30,9 @@ function init(){
     [1,1,1,1,1,1,1,1,1,1],
     [1,2,5,3,1,3,3,3,3,1],
     [1,5,1,3,3,3,3,1,3,1],
-    [1,3,1,3,1,1,5,3,3,1],
-    [1,3,3,3,3,3,3,1,3,1],
-    [1,3,1,3,1,3,3,3,3,1],
+    [1,5,1,3,1,1,5,3,3,1],
+    [1,5,3,3,3,3,3,1,3,1],
+    [1,5,1,3,1,3,3,3,3,1],
     [1,3,3,5,1,3,1,5,3,1],
     [1,3,1,1,3,3,1,1,5,1],
     [1,3,3,3,3,3,3,5,4,1],
@@ -72,12 +72,12 @@ function showInformations(){
 };
 
 function verificaVitoria(){
-  if(pc1.vitoria){
-    gameOver = true;
-    message = "Player 1  WINS";
-  }else if(pc2.vitoria){
+  if(pc1.derrota()){
     gameOver = true;
     message = "Player 2  WINS";
+  }else if(pc2.derrota()){
+    gameOver = true;
+    message = "Player 1  WINS";
   }else{};
 };
 
@@ -85,11 +85,11 @@ function initControls(){
   addEventListener('keydown', function(e){
     switch (e.keyCode) {
       case 13:
-        map.bomba(pc2, ctx);
+        pc2.colocaBomba(map, ctx);
         e.preventDefault();
         break;
       case 32:
-        map.bomba(pc1, ctx);
+        pc1.colocaBomba(map, ctx);
         e.preventDefault();
         break;
       case 37: //esquerda
